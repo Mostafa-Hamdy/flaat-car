@@ -7,6 +7,7 @@ import AppHeader from './components/AppHeader.vue'
 import ComingSoon from './components/ComingSoon.vue'
 import Login from './views/Login.vue'
 import Admin from './views/Admin.vue'
+import Fleet from './views/Fleet.vue'
 
 const auth = useAuthStore()
 useThemeStore()
@@ -40,6 +41,7 @@ onMounted(async () => {
       <AppHeader v-model="active" :tabs="TABS" />
       <main class="content">
         <Admin v-if="active === 'settings' && auth.currentUser.showAdmin" />
+        <Fleet v-else-if="active === 'cars'" />
         <ComingSoon v-else :title="titleOf(active)" />
       </main>
     </template>
