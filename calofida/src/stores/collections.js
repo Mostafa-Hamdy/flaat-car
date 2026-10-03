@@ -1,14 +1,18 @@
 import { defineStore } from 'pinia'
 import { loadAll, putItem, deleteItem } from '../db/idb.js'
-import { uid } from '../utils/helpers.js'
+import { uid, maintMigrate } from '../utils/helpers.js'
 
 // One Pinia store per IndexedDB object store, persisting item-by-item.
+// `migrate` upgrades old records in memory; changed records are written back so it runs once.
 export function defineCollection(id, storeName, migrate = (x) => x) {
   return defineStore(id, {
     state: () => ({ items: [], loaded: false }),
     actions: {
       async load() {
-        this.items = migrate(await loadAll(storeName))
+        const raw = await loadAll(storeName)
+        const migrated = migrate(raw)
+        await Promise.all(migrated.filter((m, i) => JSON.stringify(m) !== JSON.stringify(raw[i])).map((m) => putItem(storeName, m)))
+        this.items = migrated
         this.loaded = true
       },
       async upsert(fields, existingId) {
@@ -30,3 +34,5 @@ export function defineCollection(id, storeName, migrate = (x) => x) {
 export const useCarsStore = defineCollection('cars', 'cars')
 export const useDriversStore = defineCollection('drivers', 'drivers')
 export const useMaintItemsStore = defineCollection('maintitems', 'maintitems')
+export const useMaintStore = defineCollection('maints', 'maints', maintMigrate)
+export const useTasksStore = defineCollection('tasks', 'tasks')
