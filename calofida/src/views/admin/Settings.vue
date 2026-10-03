@@ -1,10 +1,14 @@
 <script setup>
 import { useThemeStore, THEMES } from '../../stores/theme.js'
+import Users from './Users.vue'
+import OwnPassword from './OwnPassword.vue'
 
 const theme = useThemeStore()
 </script>
 
 <template>
+  <Users />
+  <OwnPassword />
   <section class="card">
     <h2>🎨 مظهر البرنامج</h2>
     <p class="hint">اختر الثيم اللي يناسبك — بيتحفظ على هذا الجهاز.</p>
