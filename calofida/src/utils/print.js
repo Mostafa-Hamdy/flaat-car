@@ -2,6 +2,9 @@
 export function printTable(tableEl, title) {
   if (!tableEl) return alert('لا يوجد جدول لطباعته')
   const clone = tableEl.cloneNode(true)
+  // Expandable tables (maintenance): print every detail row, drop the chevron column.
+  clone.querySelectorAll('tr.maint-detail-row').forEach((tr) => { tr.style.display = '' })
+  clone.querySelectorAll('.chevron-col').forEach((el) => el.remove())
   clone.querySelectorAll('button').forEach((b) => b.remove())
   clone.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
     const s = document.createElement('span'); s.textContent = cb.checked ? '✔' : '—'; cb.replaceWith(s)

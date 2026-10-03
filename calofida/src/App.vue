@@ -10,6 +10,7 @@ import Admin from './views/Admin.vue'
 import Fleet from './views/Fleet.vue'
 import DailyOps from './views/DailyOps.vue'
 import Dashboard from './views/Dashboard.vue'
+import Maintenance from './views/Maintenance.vue'
 import { useOpsStore } from './stores/ops.js'
 
 const auth = useAuthStore()
@@ -48,6 +49,7 @@ onMounted(async () => {
         <Dashboard v-else-if="active === 'dashboard'" />
         <DailyOps v-else-if="active === 'ops'" />
         <Fleet v-else-if="active === 'cars'" />
+        <Maintenance v-else-if="active === 'maint'" />
         <ComingSoon v-else :title="titleOf(active)" />
       </main>
     </template>
