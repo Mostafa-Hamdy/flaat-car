@@ -6,7 +6,6 @@ import {
   useCarsStore, useDriversStore, useMaintItemsStore, useMaintStore, useTasksStore, useAirportStore,
 } from './stores/collections.js'
 import AppHeader from './components/AppHeader.vue'
-import ComingSoon from './components/ComingSoon.vue'
 import Login from './views/Login.vue'
 import Admin from './views/Admin.vue'
 import Fleet from './views/Fleet.vue'
@@ -30,22 +29,30 @@ const TABS = [
   { id: 'airport', label: 'مواعيد المطار' },
   { id: 'settings', label: '⚙️ الأدمن', adminOnly: true },
 ]
-const titleOf = (id) => TABS.find((t) => t.id === id)?.label
 
 const active = ref('dashboard')
 
 // Every login (and logout) lands on the dashboard, which everyone can see.
 watch(() => auth.currentUser?.id, () => { active.value = 'dashboard' })
 
+const dbError = ref('')
+
 onMounted(async () => {
-  await Promise.all([auth.init(), useCarsStore().load(), useDriversStore().load(), useMaintItemsStore().load(), useOpsStore().load(),
-    useMaintStore().load(), useTasksStore().load(),
-    useAirportStore().load()])
+  try {
+    await Promise.all([
+      auth.init(), useCarsStore().load(), useDriversStore().load(), useMaintItemsStore().load(), useOpsStore().load(),
+      useMaintStore().load(), useTasksStore().load(), useAirportStore().load(),
+    ])
+  } catch (e) {
+    console.error(e)
+    dbError.value = 'تعذر قراءة البيانات من قاعدة البيانات المحلية (IndexedDB). قد لا يعمل التخزين في هذا المتصفح أو الوضع الحالي (مثل التصفح الخاص).'
+  }
 })
 </script>
 
 <template>
-  <template v-if="auth.ready">
+  <div v-if="dbError" class="card db-error">{{ dbError }}</div>
+  <template v-else-if="auth.ready">
     <Login v-if="!auth.currentUser" />
     <template v-else>
       <AppHeader v-model="active" :tabs="TABS" />
@@ -57,7 +64,7 @@ onMounted(async () => {
         <Maintenance v-else-if="active === 'maint'" />
         <Tasks v-else-if="active === 'tasks'" />
         <Airport v-else-if="active === 'airport'" />
-        <ComingSoon v-else :title="titleOf(active)" />
+        <Dashboard v-else />
       </main>
     </template>
   </template>
@@ -65,5 +72,6 @@ onMounted(async () => {
 
 <style>
 .content{padding:24px 28px}
+.db-error{max-width:520px;margin:15vh auto;text-align:center;color:var(--brick)}
 @media (max-width:700px){.content{padding:16px}}
 </style>

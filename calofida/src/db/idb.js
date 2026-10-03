@@ -15,7 +15,12 @@ export function openDB() {
         if (!d.objectStoreNames.contains(name)) d.createObjectStore(name, { keyPath: 'id' })
       })
     }
-    req.onsuccess = () => { db = req.result; resolve(db) }
+    req.onsuccess = () => {
+      db = req.result
+      // Let another tab upgrade/delete the database instead of leaving it blocked on this connection.
+      db.onversionchange = () => db.close()
+      resolve(db)
+    }
     req.onerror = () => reject(req.error)
   })
 }
