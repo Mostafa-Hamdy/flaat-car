@@ -8,6 +8,8 @@ import ComingSoon from './components/ComingSoon.vue'
 import Login from './views/Login.vue'
 import Admin from './views/Admin.vue'
 import Fleet from './views/Fleet.vue'
+import DailyOps from './views/DailyOps.vue'
+import { useOpsStore } from './stores/ops.js'
 
 const auth = useAuthStore()
 useThemeStore()
@@ -30,7 +32,7 @@ const active = ref('dashboard')
 watch(() => auth.currentUser?.id, () => { active.value = 'dashboard' })
 
 onMounted(async () => {
-  await Promise.all([auth.init(), useCarsStore().load(), useDriversStore().load(), useMaintItemsStore().load()])
+  await Promise.all([auth.init(), useCarsStore().load(), useDriversStore().load(), useMaintItemsStore().load(), useOpsStore().load()])
 })
 </script>
 
@@ -41,6 +43,7 @@ onMounted(async () => {
       <AppHeader v-model="active" :tabs="TABS" />
       <main class="content">
         <Admin v-if="active === 'settings' && auth.currentUser.showAdmin" />
+        <DailyOps v-else-if="active === 'ops'" />
         <Fleet v-else-if="active === 'cars'" />
         <ComingSoon v-else :title="titleOf(active)" />
       </main>

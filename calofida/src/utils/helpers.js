@@ -20,7 +20,8 @@ export function dateInfo(dateStr) {
     month: MONTH_NAMES[d.getMonth()],
     monthIdx: d.getMonth(),
     year: d.getFullYear(),
-    half: d.getDate() <= 15 ? 'أول 15 يوم' : 'آخر 15 يوم',
+    // Same wording as the legacy app: it feeds the "نصف الشهر" column of the Excel export.
+    half: (d.getDate() <= 15 ? 'أول 15 ' : 'أخر 15 ') + MONTH_NAMES[d.getMonth()],
   }
 }
 
