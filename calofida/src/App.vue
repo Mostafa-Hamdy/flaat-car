@@ -2,6 +2,7 @@
 import { ref, watch, onMounted } from 'vue'
 import { useAuthStore } from './stores/auth.js'
 import { useThemeStore } from './stores/theme.js'
+import { useCarsStore, useDriversStore, useMaintItemsStore } from './stores/collections.js'
 import AppHeader from './components/AppHeader.vue'
 import ComingSoon from './components/ComingSoon.vue'
 import Login from './views/Login.vue'
@@ -27,7 +28,9 @@ const active = ref('dashboard')
 // Every login (and logout) lands on the dashboard, which everyone can see.
 watch(() => auth.currentUser?.id, () => { active.value = 'dashboard' })
 
-onMounted(() => auth.init())
+onMounted(async () => {
+  await Promise.all([auth.init(), useCarsStore().load(), useDriversStore().load(), useMaintItemsStore().load()])
+})
 </script>
 
 <template>

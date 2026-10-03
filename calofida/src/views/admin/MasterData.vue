@@ -1,23 +1,24 @@
 <script setup>
 import { ref } from 'vue'
-import MasterData from './admin/MasterData.vue'
-import Settings from './admin/Settings.vue'
+import Drivers from './Drivers.vue'
+import MaintCatalog from './MaintCatalog.vue'
+import CarsStatus from './CarsStatus.vue'
 
-const sub = ref('master')
+const sub = ref('drivers')
 const subs = [
-  { id: 'master', label: 'الماستر داتا' },
-  { id: 'settings', label: 'الإعدادات' },
+  { id: 'drivers', label: '👤 السائقين', comp: Drivers },
+  { id: 'maintitems', label: '🧰 بنود الصيانة', comp: MaintCatalog },
+  { id: 'carsstatus', label: '🚗 حالة السيارات', comp: CarsStatus },
 ]
 </script>
 
 <template>
-  <div>
+  <section class="card">
     <div class="subtabs">
       <button v-for="s in subs" :key="s.id" class="subtab" :class="{ active: sub === s.id }" @click="sub = s.id">{{ s.label }}</button>
     </div>
-    <MasterData v-if="sub === 'master'" />
-    <Settings v-else />
-  </div>
+    <component :is="subs.find((s) => s.id === sub).comp" />
+  </section>
 </template>
 
 <style scoped>

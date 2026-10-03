@@ -43,3 +43,10 @@ export function maintMigrate(list) {
     return { ...clean, items: price ? [{ name: m.type || 'تكلفة الصيانة', price }] : [], total: price }
   })
 }
+
+export function expiryStatus(days) {
+  if (days === null) return { label: '—', cls: '' }
+  if (days < 0) return { label: 'منتهي منذ ' + Math.abs(days) + ' يوم', cls: 'bad' }
+  if (days <= 30) return { label: 'باقي ' + days + ' يوم', cls: 'warn' }
+  return { label: 'ساري (' + days + ' يوم)', cls: 'ok' }
+}
