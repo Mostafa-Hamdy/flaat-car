@@ -2,6 +2,7 @@
 import { useThemeStore, THEMES } from '../../stores/theme.js'
 import Users from './Users.vue'
 import OwnPassword from './OwnPassword.vue'
+import Backup from './Backup.vue'
 
 const theme = useThemeStore()
 </script>
@@ -9,6 +10,7 @@ const theme = useThemeStore()
 <template>
   <Users />
   <OwnPassword />
+  <Backup />
   <section class="card">
     <h2>🎨 مظهر البرنامج</h2>
     <p class="hint">اختر الثيم اللي يناسبك — بيتحفظ على هذا الجهاز.</p>

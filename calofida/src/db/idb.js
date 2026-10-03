@@ -46,11 +46,21 @@ export function deleteItem(store, id) {
   return done(tx)
 }
 
-// Replace the whole store (used by backup import).
-export function replaceAll(store, items) {
-  const tx = db.transaction(store, 'readwrite')
-  const s = tx.objectStore(store)
-  s.clear()
-  ;(items || []).forEach((it) => s.put(JSON.parse(JSON.stringify(it))))
-  return done(tx)
+// Replace several stores in ONE transaction: either every store is replaced or none is.
+export function replaceMany(map) {
+  const names = Object.keys(map)
+  const tx = db.transaction(names, 'readwrite')
+  const finished = done(tx)
+  try {
+    for (const name of names) {
+      const s = tx.objectStore(name)
+      s.clear()
+      ;(map[name] || []).forEach((it) => s.put(JSON.parse(JSON.stringify(it))))
+    }
+  } catch (e) {
+    tx.abort() // a synchronous put error must not leave a half-replaced database
+    finished.catch(() => {})
+    throw e
+  }
+  return finished
 }

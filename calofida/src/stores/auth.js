@@ -34,6 +34,14 @@ export const useAuthStore = defineStore('auth', {
       } catch (e) { /* sessionStorage unavailable */ }
       this.ready = true
     },
+    // After a backup restore replaced the users store: refresh the list and re-bind (or drop) the session.
+    async reloadUsers() {
+      this.users = await loadAll('users')
+      if (!this.currentUser) return
+      const me = this.users.find((u) => u.id === this.currentUser.id)
+      if (me) this.currentUser = me
+      else this.logout()
+    },
     async createFirstUser({ name, username, password, securityQ, securityA }) {
       const rec = await withHash(
         { id: uid(), name, username, securityQ, securityA, canEdit: { ...DEFAULT_CAN_EDIT }, showAdmin: true },
