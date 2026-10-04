@@ -70,21 +70,22 @@ const f1 = (n) => n.toFixed(1)
 </script>
 
 <template>
-  <div>
-    <div class="head">
+  <section class="panel">
+    <div class="panel-head">
       <h2>{{ title }}</h2>
-      <div class="legend">
+      <div class="chart-legend">
         <span><i style="background:var(--teal)"></i> الإيراد</span>
         <span><i style="background:var(--amber)"></i> المصاريف</span>
         <span><i class="line" style="background:var(--brick)"></i> صافي الربح</span>
       </div>
     </div>
+    <div class="panel-body">
     <div v-if="range" class="range">{{ range }}</div>
 
     <div v-if="!geo" class="empty" style="padding:26px 0">
       <div class="big">📈</div>لا توجد بيانات تشغيل تطابق الفلتر الحالي لعرض الرسم البياني
     </div>
-    <div v-else class="wrap">
+    <div v-else class="chart-wrap">
       <svg :viewBox="`0 0 ${W} ${H}`" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="الأداء الشهري حسب الفلتر الحالي">
         <defs>
           <linearGradient id="gradTeal" x1="0" y1="0" x2="0" y2="1">
@@ -129,19 +130,18 @@ const f1 = (n) => n.toFixed(1)
         <text class="car" :x="f1(geo.last.cx)" :y="f1(geo.last.py - 14)" text-anchor="middle" font-size="20">🚘</text>
       </svg>
     </div>
-  </div>
+    </div>
+  </section>
 </template>
 
 <style scoped>
-.head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-.head h2{font-size:16px;margin:0}
-.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft)}
-.legend span{display:inline-flex;align-items:center;gap:6px}
-.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
-.legend i.line{width:14px;height:2px;border-radius:2px}
+.chart-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft)}
+.chart-legend span{display:inline-flex;align-items:center;gap:6px}
+.chart-legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.chart-legend i.line{width:14px;height:2px;border-radius:2px}
 .range{font-size:12px;color:var(--ink-soft);margin-bottom:10px}
-.wrap{width:100%;overflow-x:auto}
-.wrap svg{width:100%;height:auto;min-width:520px;display:block}
+.chart-wrap{width:100%;overflow-x:auto}
+.chart-wrap svg{width:100%;height:auto;min-width:520px;display:block}
 .bar{transition:opacity .15s}
 .bar:hover{opacity:.75}
 .profit-path{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.1s ease-out forwards .15s}

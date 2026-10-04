@@ -99,7 +99,7 @@ const alertsTable = ref(null)
 
 <template>
   <div>
-    <section class="card block">
+    <section class="panel">
       <div class="panel-head">
         <h2 style="margin:0">ملخص عام</h2>
         <div class="toolbar" style="margin:0">
@@ -122,21 +122,24 @@ const alertsTable = ref(null)
           <FilterClear :active="anyFilter" @clear="clearFilters" />
         </div>
       </div>
+    <div class="panel-body">
       <div class="stat-grid">
         <div v-for="c in cards" :key="c.label" class="stat-card" :class="c.cls">
           <div class="label">{{ c.label }}</div>
           <div class="value">{{ show(c) }}</div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="card block"><PerfChart :rows="rows" /></section>
+    <PerfChart :rows="rows" />
 
-    <section class="card block">
+    <section class="panel">
       <div class="panel-head">
         <h2 style="margin:0">تنبيهات التراخيص والتأمينات</h2>
         <button class="btn secondary small" @click="printTable(alertsTable, 'تنبيهات التراخيص والتأمينات')">🖨️ طباعة</button>
       </div>
+    <div class="panel-body">
       <div v-if="!alerts.length" class="empty">
         <div class="big">✅</div>لا توجد تراخيص أو تأمينات أو صيانات أو مهام قريبة من الاستحقاق
       </div>
@@ -150,10 +153,8 @@ const alertsTable = ref(null)
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
+  </section>
   </div>
 </template>
 
-<style scoped>
-.block{margin-bottom:20px}
-</style>

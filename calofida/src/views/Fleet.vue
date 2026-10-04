@@ -51,7 +51,7 @@ async function del(c) {
 </script>
 
 <template>
-  <section class="card">
+  <section class="panel">
     <div class="panel-head">
       <h2 style="margin:0">بيان السيارات</h2>
       <div style="display:flex;gap:8px">
@@ -59,6 +59,7 @@ async function del(c) {
         <button v-if="canEdit" class="btn primary" @click="add">+ إضافة سيارة</button>
       </div>
     </div>
+    <div class="panel-body">
 
     <div class="toolbar">
       <div class="field" :class="{ 'filter-active': q.trim() }">
@@ -102,7 +103,7 @@ async function del(c) {
       <div v-else-if="!rows.length" class="empty">لا توجد نتائج مطابقة للبحث</div>
     </div>
 
-    <Modal v-if="open" :title="editingId ? 'تعديل سيارة' : 'إضافة سيارة'" width="760px" @close="open = false">
+    <Modal v-if="open" :title="editingId ? 'تعديل سيارة' : 'إضافة سيارة'" @close="open = false">
       <div class="form-grid">
         <div class="field"><label>لوحة رقم</label><input v-model="form.plate"></div>
         <div class="field"><label>ماركة السيارة</label><input v-model="form.brand"></div>
@@ -121,9 +122,10 @@ async function del(c) {
         <div class="field"><label>تاريخ إنتهاء مؤسسة</label><input v-model="form.org_end" type="date"></div>
       </div>
       <template #footer>
-        <button class="btn" @click="open = false">إلغاء</button>
+        <button class="btn secondary" @click="open = false">إلغاء</button>
         <button class="btn primary" @click="save">حفظ</button>
       </template>
     </Modal>
+    </div>
   </section>
 </template>

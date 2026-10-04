@@ -19,19 +19,18 @@ async function submit() {
 </script>
 
 <template>
-  <section class="card block">
+  <section class="panel">
     <div class="panel-head"><h2 style="margin:0">🔑 تغيير كلمة مروري</h2></div>
+    <div class="panel-body">
     <form @submit.prevent="submit">
       <div class="form-grid">
         <div class="field"><label>كلمة المرور الحالية</label><input v-model="f.current" type="password" autocomplete="current-password"></div>
         <div class="field"><label>كلمة المرور الجديدة</label><input v-model="f.next" type="password" autocomplete="new-password"></div>
         <div class="field"><label>تأكيد كلمة المرور الجديدة</label><input v-model="f.confirm" type="password" autocomplete="new-password"></div>
       </div>
-      <button class="btn primary" type="submit">تحديث كلمة المرور</button>
+      <div style="margin-top:12px;"><button class="btn" type="submit">تحديث كلمة المرور</button></div>
     </form>
+    </div>
   </section>
 </template>
 
-<style scoped>
-.block{margin-bottom:20px}
-</style>

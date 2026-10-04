@@ -41,14 +41,14 @@ async function save() {
 
 <template>
   <div>
-    <div class="panel-head">
+    <div class="panel-head" style="padding:0 0 10px">
       <h3>حالة السيارات (نشطة / غير نشطة) وتاريخ الانضمام</h3>
       <button class="btn secondary" @click="printTable(table, 'حالة السيارات')">🖨️ طباعة</button>
     </div>
-    <p class="note">
+    <div class="note">
       السيارة اللي حالتها "غير نشطة" بتتشال تلقائيًا من صفحة "بيان السيارات" ومن قائمة اختيار السيارة في التشغيل اليومي.
       باقي بيانات السيارة (اللوحة، الرخصة، التأمين...) لسه بتتعدل من صفحة "بيان السيارات" زي ما هي.
-    </p>
+    </div>
 
     <div class="toolbar">
       <div class="field" :class="{ 'filter-active': q.trim() }">
@@ -86,15 +86,17 @@ async function save() {
       <div v-else-if="!rows.length" class="empty">لا توجد نتائج مطابقة للفلاتر</div>
     </div>
 
-    <Modal v-if="editing" :title="'تعديل حالة سيارة: ' + (editing.plate || '')" width="440px" @close="editing = null">
-      <div class="field"><label>السيارة</label><input :value="`${editing.plate || ''} — ${editing.brand || ''} ${editing.model || ''}`" disabled></div>
+    <Modal v-if="editing" :title="'تعديل حالة سيارة: ' + (editing.plate || '')" @close="editing = null">
+      <div class="form-grid">
+      <div class="field full"><label>السيارة</label><input :value="`${editing.plate || ''} — ${editing.brand || ''} ${editing.model || ''}`" disabled></div>
       <div class="field"><label>تاريخ الانضمام للأسطول</label><input v-model="form.joinDate" type="date"></div>
       <div class="field">
         <label>الحالة</label>
         <select v-model="form.status"><option value="active">نشطة</option><option value="inactive">غير نشطة</option></select>
       </div>
+      </div>
       <template #footer>
-        <button class="btn" @click="editing = null">إلغاء</button>
+        <button class="btn secondary" @click="editing = null">إلغاء</button>
         <button class="btn primary" @click="save">حفظ</button>
       </template>
     </Modal>

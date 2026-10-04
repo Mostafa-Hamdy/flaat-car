@@ -56,7 +56,7 @@ async function del(d) {
 
 <template>
   <div>
-    <div class="panel-head">
+    <div class="panel-head" style="padding:0 0 14px">
       <h3>قائمة السائقين المسجلين</h3>
       <div style="display:flex;gap:8px">
         <button class="btn secondary" @click="printTable(table, 'قائمة السائقين')">🖨️ طباعة</button>
@@ -128,7 +128,7 @@ async function del(d) {
         <div class="field full"><label>ملاحظات</label><textarea v-model="form.notes" rows="2"></textarea></div>
       </div>
       <template #footer>
-        <button class="btn" @click="open = false">إلغاء</button>
+        <button class="btn secondary" @click="open = false">إلغاء</button>
         <button class="btn primary" @click="save">حفظ</button>
       </template>
     </Modal>
