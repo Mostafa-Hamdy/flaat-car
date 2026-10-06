@@ -74,7 +74,7 @@ async function del(a) {
 </script>
 
 <template>
-  <section class="card">
+  <section class="panel">
     <div class="panel-head">
       <h2 style="margin:0">مواعيد المطار</h2>
       <div style="display:flex;gap:8px">
@@ -82,6 +82,7 @@ async function del(a) {
         <button v-if="canEdit" class="btn primary" @click="add">+ إضافة موعد</button>
       </div>
     </div>
+    <div class="panel-body">
 
     <div class="toolbar">
       <div class="field" :class="{ 'filter-active': q.trim() }">
@@ -145,7 +146,7 @@ async function del(a) {
       </div>
     </div>
 
-    <Modal v-if="open" :title="editingId ? 'تعديل موعد مطار' : 'إضافة موعد مطار'" width="680px" @close="open = false">
+    <Modal v-if="open" :title="editingId ? 'تعديل موعد مطار' : 'إضافة موعد مطار'" @close="open = false">
       <div class="form-grid">
         <div class="field"><label>اسم العميل</label><input v-model="form.client"></div>
         <div class="field"><label>رقم هاتف العميل</label><input v-model="form.phone"></div>
@@ -178,10 +179,11 @@ async function del(a) {
         <div class="field full"><label>ملاحظات</label><textarea v-model="form.notes" rows="2"></textarea></div>
       </div>
       <template #footer>
-        <button class="btn" @click="open = false">إلغاء</button>
+        <button class="btn secondary" @click="open = false">إلغاء</button>
         <button class="btn primary" @click="save">حفظ</button>
       </template>
     </Modal>
+    </div>
   </section>
 </template>
 

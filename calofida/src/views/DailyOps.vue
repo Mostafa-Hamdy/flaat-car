@@ -106,11 +106,12 @@ const table = ref(null)
 </script>
 
 <template>
-  <section class="card">
+  <section class="panel">
     <div class="panel-head">
       <h2 style="margin:0">سجل التشغيل اليومي</h2>
       <button class="btn secondary" @click="printTable(table, 'سجل التشغيل اليومي')">🖨️ طباعة</button>
     </div>
+    <div class="panel-body">
     <p class="note">
       الجدول بيعرض شهر واحد في المرة — اتنقل بين الشهور بالأسهم أو اقفز لتاريخ معين، وكل يوم بتظهر تحته السيارات اللي "نشطة" ومنضمة للأسطول لحد تاريخه.
       اكتب في أي خانة وهتتحفظ تلقائيًا.
@@ -120,9 +121,9 @@ const table = ref(null)
       <div class="field">
         <label>الشهر المعروض</label>
         <div style="display:flex;align-items:center;gap:6px">
-          <button type="button" class="btn secondary" title="الشهر السابق" :disabled="atMin" @click="shiftMonth(-1)">◀</button>
+          <button type="button" class="btn secondary" style="padding:9px 12px;" title="الشهر السابق" :disabled="atMin" @click="shiftMonth(-1)">◀</button>
           <span class="month-label">{{ monthLabel }}</span>
-          <button type="button" class="btn secondary" title="الشهر التالي" @click="shiftMonth(1)">▶</button>
+          <button type="button" class="btn secondary" style="padding:9px 12px;" title="الشهر التالي" @click="shiftMonth(1)">▶</button>
         </div>
       </div>
       <div class="field">
@@ -180,6 +181,7 @@ const table = ref(null)
         <div class="big">🗒️</div>
         لا توجد سيارات نشطة لعرضها في الشهر ده — أضف سيارات وفعّلها من "الأدمن › الماستر داتا"
       </div>
+    </div>
     </div>
   </section>
 </template>

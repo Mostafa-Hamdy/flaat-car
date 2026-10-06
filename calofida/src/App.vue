@@ -56,22 +56,31 @@ onMounted(async () => {
     <Login v-if="!auth.currentUser" />
     <template v-else>
       <AppHeader v-model="active" :tabs="TABS" />
-      <main class="content">
-        <Admin v-if="active === 'settings' && auth.currentUser.showAdmin" />
-        <Dashboard v-else-if="active === 'dashboard'" />
-        <DailyOps v-else-if="active === 'ops'" />
-        <Fleet v-else-if="active === 'cars'" />
-        <Maintenance v-else-if="active === 'maint'" />
-        <Tasks v-else-if="active === 'tasks'" />
-        <Airport v-else-if="active === 'airport'" />
-        <Dashboard v-else />
+      <main>
+        <div :key="active" class="view">
+          <Admin v-if="active === 'settings' && auth.currentUser.showAdmin" />
+          <Dashboard v-else-if="active === 'dashboard'" />
+          <DailyOps v-else-if="active === 'ops'" />
+          <Fleet v-else-if="active === 'cars'" />
+          <Maintenance v-else-if="active === 'maint'" />
+          <Tasks v-else-if="active === 'tasks'" />
+          <Airport v-else-if="active === 'airport'" />
+          <Dashboard v-else />
+        </div>
       </main>
+      <footer>ليموزين كالوفيدا · البيانات محفوظة محليًا على هذا الجهاز فقط</footer>
     </template>
   </template>
+  <div v-else class="app-loading">
+    <div style="font-size:34px;">🚘</div>
+    <div style="font-weight:700; color:var(--ink);">جاري تحميل البيانات...</div>
+    <div class="spinner"></div>
+  </div>
 </template>
 
 <style>
-.content{padding:24px 28px}
-.db-error{max-width:520px;margin:15vh auto;text-align:center;color:var(--brick)}
-@media (max-width:700px){.content{padding:16px}}
+.db-error{max-width:520px;margin:15vh auto;text-align:center;color:var(--brick);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.app-loading{position:fixed;inset:0;z-index:9999;background:var(--paper);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.app-loading .spinner{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--teal);border-radius:50%;animation:appLoadSpin .8s linear infinite}
+@keyframes appLoadSpin{to{transform:rotate(360deg)}}
 </style>

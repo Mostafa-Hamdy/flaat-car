@@ -49,9 +49,10 @@ function toExcel() {
 </script>
 
 <template>
-  <section class="card block">
+  <section class="panel">
     <div class="panel-head"><h2 style="margin:0">النسخ الاحتياطي</h2></div>
-    <p class="note">
+    <div class="panel-body">
+    <p style="color:var(--ink-soft); margin-top:0;">
       تصدير كل بيانات النظام (السيارات، التشغيل اليومي، الصيانة، المهام، السائقين، مواعيد المطار، المستخدمين) كملف نسخة احتياطية،
       أو استيراد نسخة سابقة لاستعادة البيانات (بتقبل ملفات النسخة القديمة كمان).
     </p>
@@ -61,10 +62,10 @@ function toExcel() {
       <button class="btn secondary" @click="toExcel">📊 تصدير ملف إكسل (بنفس صيغة الشيت الأصلي)</button>
       <input ref="fileInput" type="file" accept=".json,application/json" style="display:none" @change="onFile">
     </div>
+    </div>
   </section>
 </template>
 
 <style scoped>
-.block{margin-bottom:20px}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 </style>

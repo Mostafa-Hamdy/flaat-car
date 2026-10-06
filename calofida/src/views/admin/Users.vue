@@ -60,12 +60,13 @@ async function del(u) {
 </script>
 
 <template>
-  <section class="card block">
+  <section class="panel">
     <div class="panel-head">
       <h2 style="margin:0">👥 المستخدمين والصلاحيات</h2>
       <button v-if="canManage" class="btn primary" @click="add">+ إضافة مستخدم</button>
     </div>
-    <p class="note">
+    <div class="panel-body">
+    <p style="color:var(--ink-soft); margin-top:0;">
       كل شخص بيفتح البرنامج بيسجّل دخول باسمه وكلمة المرور بتاعته. من هنا تتحكم في مين يقدر يعدّل في كل صفحة، ومين تظهر له صفحة الأدمن دي أصلًا.
       ⚠️ البيانات محفوظة على هذا الجهاز بس، وكلمات المرور بتتخزن مشفّرة (hash)، لكن ده يفضل تنظيم للاستخدام المشترك مش حماية أمنية قوية.
     </p>
@@ -90,7 +91,7 @@ async function del(u) {
       <div v-if="!auth.users.length" class="empty"><div class="big">👥</div>لا يوجد مستخدمين بعد</div>
     </div>
 
-    <Modal v-if="open" :title="editingId ? 'تعديل مستخدم' : 'إضافة مستخدم'" width="680px" @close="open = false">
+    <Modal v-if="open" :title="editingId ? 'تعديل مستخدم' : 'إضافة مستخدم'" @close="open = false">
       <div class="form-grid">
         <div class="field"><label>الاسم</label><input v-model="form.name"></div>
         <div class="field"><label>اسم الدخول</label><input v-model="form.username" autocomplete="off"></div>
@@ -109,15 +110,15 @@ async function del(u) {
         </div>
       </div>
       <template #footer>
-        <button class="btn" @click="open = false">إلغاء</button>
+        <button class="btn secondary" @click="open = false">إلغاء</button>
         <button class="btn primary" @click="save">حفظ</button>
       </template>
     </Modal>
+    </div>
   </section>
 </template>
 
 <style scoped>
-.block{margin-bottom:20px}
 .hint{font-size:11.5px;color:var(--ink-soft);padding-top:8px}
 .checks{display:flex;flex-wrap:wrap;gap:14px;padding-top:6px}
 .check{display:flex;align-items:center;gap:6px;font-weight:600;font-size:13px;color:var(--ink);cursor:pointer}

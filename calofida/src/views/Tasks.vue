@@ -60,7 +60,7 @@ async function del(t) {
 
 <template>
   <div>
-    <section class="card block">
+    <section class="panel">
       <div class="panel-head">
         <h2 style="margin:0">المهام القادمة</h2>
         <div style="display:flex;gap:8px">
@@ -68,6 +68,7 @@ async function del(t) {
           <button v-if="canEdit" class="btn primary" @click="add">+ إضافة مهمة</button>
         </div>
       </div>
+    <div class="panel-body">
 
       <div class="toolbar">
         <div class="field" :class="{ 'filter-active': q.trim() }">
@@ -111,13 +112,15 @@ async function del(t) {
           لا توجد مهام قادمة حاليًا — أضف أول حاجة مطلوب تنفيذها الفترة القادمة
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="card block">
+    <section class="panel">
       <div class="panel-head">
         <h2 style="margin:0">المهام التي تم تنفيذها</h2>
         <button class="btn secondary" @click="printTable(doneTable, 'المهام التي تم تنفيذها')">🖨️ طباعة</button>
       </div>
+    <div class="panel-body">
       <div class="table-wrap">
         <table ref="doneTable">
           <thead><tr><th></th><th>المهمة</th><th>السيارة المرتبطة</th><th>تاريخ الاستحقاق</th><th>الأولوية</th><th>ملاحظات</th><th></th></tr></thead>
@@ -140,9 +143,10 @@ async function del(t) {
         </table>
         <div v-if="!done.length" class="empty"><div class="big">✅</div>لا توجد مهام منجزة بعد</div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <Modal v-if="open" :title="editingId ? 'تعديل مهمة' : 'إضافة مهمة'" width="600px" @close="open = false">
+    <Modal v-if="open" :title="editingId ? 'تعديل مهمة' : 'إضافة مهمة'" @close="open = false">
       <div class="form-grid">
         <div class="field full"><label>المهمة / الوصف</label><input v-model="form.title" placeholder="مثال: تجديد رخصة السيارة أ ب ج 1234"></div>
         <div class="field"><label>تاريخ الاستحقاق</label><input v-model="form.duedate" type="date"></div>
@@ -164,7 +168,7 @@ async function del(t) {
         <div class="field full"><label>ملاحظات</label><textarea v-model="form.notes" rows="2"></textarea></div>
       </div>
       <template #footer>
-        <button class="btn" @click="open = false">إلغاء</button>
+        <button class="btn secondary" @click="open = false">إلغاء</button>
         <button class="btn primary" @click="save">حفظ</button>
       </template>
     </Modal>

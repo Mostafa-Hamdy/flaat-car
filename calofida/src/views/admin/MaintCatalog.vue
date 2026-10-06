@@ -41,7 +41,7 @@ async function del(it) {
 
 <template>
   <div>
-    <div class="panel-head">
+    <div class="panel-head" style="padding:0 0 14px">
       <h3>دليل بنود الصيانة الشائعة</h3>
       <div style="display:flex;gap:8px">
         <button class="btn secondary" @click="printTable(table, 'دليل بنود الصيانة')">🖨️ طباعة</button>
@@ -79,13 +79,15 @@ async function del(it) {
       </div>
       <div v-else-if="!rows.length" class="empty">لا توجد نتائج مطابقة للفلاتر</div>
     </div>
-    <p class="note" style="margin-top:10px">هذه البنود بتظهر كاقتراحات تلقائية عند إضافة بنود صيانة جديدة في صفحة الصيانة.</p>
+    <div class="note" style="margin-top:10px">هذه البنود بتظهر كاقتراحات تلقائية عند إضافة بنود صيانة جديدة في صفحة الصيانة.</div>
 
-    <Modal v-if="open" :title="editingId ? 'تعديل بند صيانة' : 'إضافة بند صيانة'" width="440px" @close="open = false">
-      <div class="field"><label>اسم البند</label><input v-model="form.name"></div>
-      <div class="field"><label>السعر الافتراضي</label><input v-model="form.price" type="number" step="0.01"></div>
+    <Modal v-if="open" :title="editingId ? 'تعديل بند صيانة' : 'إضافة بند صيانة'" @close="open = false">
+      <div class="form-grid">
+        <div class="field"><label>اسم البند</label><input v-model="form.name" placeholder="مثال: زيت، فلتر زيت، مصنعية..."></div>
+        <div class="field"><label>السعر الافتراضي</label><input v-model="form.price" type="number" step="0.01"></div>
+      </div>
       <template #footer>
-        <button class="btn" @click="open = false">إلغاء</button>
+        <button class="btn secondary" @click="open = false">إلغاء</button>
         <button class="btn primary" @click="save">حفظ</button>
       </template>
     </Modal>
