@@ -115,7 +115,7 @@ const f1 = (n) => n.toFixed(1)
           </rect>
           <template v-if="geo.showLabels">
             <text :x="f1(b.cx - geo.bw / 2 - 3)" :y="f1(baseY - b.revH - 6)" text-anchor="middle" font-size="10" font-weight="700" fill="var(--teal-dark)">{{ fmtMoney(b.rev) }}</text>
-            <text :x="f1(b.cx + geo.bw / 2 + 3)" :y="f1(baseY - b.expH - 6)" text-anchor="middle" font-size="10" font-weight="700" fill="#9C6A22">{{ fmtMoney(b.exp) }}</text>
+            <text :x="f1(b.cx + geo.bw / 2 + 3)" :y="f1(baseY - b.expH - 6)" text-anchor="middle" font-size="10" font-weight="700" fill="var(--amber)">{{ fmtMoney(b.exp) }}</text>
           </template>
           <line :x1="f1(b.cx)" :y1="baseY" :x2="f1(b.cx)" :y2="baseY + 6" stroke="var(--line)" stroke-width="2" />
           <text :x="f1(b.cx)" :y="baseY + 24" text-anchor="middle" font-size="12" fill="var(--ink-soft)">{{ b.label }}</text>

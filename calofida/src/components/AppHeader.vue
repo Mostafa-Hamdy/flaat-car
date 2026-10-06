@@ -38,19 +38,18 @@ const visibleTabs = computed(() => props.tabs.filter((t) => !t.adminOnly || auth
 </template>
 
 <style scoped>
-.app-header{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:#fff;padding:22px 28px 0;position:relative;overflow:hidden}
-.app-header::after{content:"";position:absolute;inset-inline-start:0;bottom:0;width:100%;height:10px;pointer-events:none;
-  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.55) 0 26px,transparent 26px 46px);opacity:.35}
-.header-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px}
-.brand-badge{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid rgba(255,255,255,.25)}
-.brand-title{font-size:20px;font-weight:800;font-family:'Tajawal',inherit}
-.brand-sub{font-size:12.5px;opacity:.82;margin-top:2px}
-.user-badge{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700}
-.ghost-btn{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.35);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit}
-.ghost-btn:hover{background:rgba(255,255,255,.22)}
-.tabs{display:flex;gap:2px;margin-top:18px;position:relative;z-index:1;overflow-x:auto}
-.tab{padding:11px 20px;font-size:14px;font-weight:700;color:rgba(255,255,255,.72);background:transparent;border:none;cursor:pointer;border-radius:10px 10px 0 0;font-family:'Tajawal',inherit;white-space:nowrap}
-.tab.active{background:var(--paper);color:var(--teal-dark)}
-@media (max-width:700px){.app-header{padding:16px 16px 0}}
+.app-header{background:var(--surface);color:var(--fg);border-bottom:1px solid var(--border);padding:var(--sp-5) var(--sp-8) 0}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:var(--sp-3)}
+.brand-badge{width:40px;height:40px;border-radius:var(--radius-lg);background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid var(--border)}
+.brand-title{font-size:var(--fs-h1);font-weight:var(--fw-semibold)}
+.brand-sub{font-size:var(--fs-sm);color:var(--fg-muted);margin-top:2px}
+.user-badge{display:flex;align-items:center;gap:var(--sp-3);font-size:var(--fs-sm);font-weight:var(--fw-medium)}
+.ghost-btn{background:var(--surface-2);color:var(--fg);border:1px solid var(--border);height:var(--control-h);padding:0 var(--sp-3);border-radius:var(--radius-md);font-size:var(--fs-sm);cursor:pointer;font-family:inherit}
+.ghost-btn:hover{background:var(--border)}
+.tabs{display:flex;gap:var(--sp-1);margin-top:var(--sp-4);overflow-x:auto}
+.tab{padding:var(--sp-3) var(--sp-4);font-size:var(--fs-ui);font-weight:var(--fw-medium);color:var(--fg-muted);background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap}
+.tab:hover{color:var(--fg)}
+.tab.active{color:var(--fg);border-bottom-color:var(--accent)}
+@media (max-width:700px){.app-header{padding:var(--sp-4) var(--sp-4) 0}}
 </style>

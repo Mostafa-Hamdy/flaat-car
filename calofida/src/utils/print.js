@@ -17,10 +17,10 @@ export function printTable(tableEl, title) {
   const date = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })
   w.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>${title}</title>
 <style>
-body{font-family:'Tajawal','IBM Plex Sans Arabic',Tahoma,Arial,sans-serif;padding:24px;color:#1F2430}
-h2{margin:0 0 16px;font-size:18px}.meta{color:#5B6270;font-size:12px;margin-bottom:16px}
+body{font-family:'IBM Plex Sans Arabic','Noto Sans Arabic',Tahoma,Arial,sans-serif;padding:24px;color:#111}
+h2{margin:0 0 16px;font-size:18px}.meta{color:#6b6b6b;font-size:12px;margin-bottom:16px}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{border:1px solid #ccc;padding:6px 8px;text-align:start}th{background:#E6EFEE;color:#0A423E}
+th,td{border:1px solid #ccc;padding:6px 8px;text-align:start}th{background:#f0f0f0;color:#111}
 .badge{padding:2px 7px;border-radius:99px;font-size:10.5px;border:1px solid #999;display:inline-block}
 @media print{body{padding:0}}
 </style></head><body><h2>${title} — ليموزين كالوفيدا</h2><div class="meta">تاريخ الطباعة: ${date}</div>${clone.outerHTML}</body></html>`)

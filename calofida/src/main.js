@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import './fonts.css' // self-hosted fonts
+import './tokens.css' // design tokens: colors, fonts, spacing, RTL base
 import './styles.css'
 import { openDB } from './db/idb.js'
 
