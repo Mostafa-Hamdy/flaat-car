@@ -14,6 +14,7 @@ import Dashboard from './views/Dashboard.vue'
 import Maintenance from './views/Maintenance.vue'
 import Tasks from './views/Tasks.vue'
 import Airport from './views/Airport.vue'
+import Drivers from './views/Drivers.vue'
 import { useOpsStore } from './stores/ops.js'
 
 const auth = useAuthStore()
@@ -27,6 +28,7 @@ const TABS = [
   { id: 'maint', label: 'الصيانة' },
   { id: 'tasks', label: 'المهام القادمة' },
   { id: 'airport', label: 'مواعيد المطار' },
+  { id: 'drivers', label: 'السائقين' },
   { id: 'settings', label: '⚙️ الأدمن', adminOnly: true },
 ]
 
@@ -65,6 +67,7 @@ onMounted(async () => {
           <Maintenance v-else-if="active === 'maint'" />
           <Tasks v-else-if="active === 'tasks'" />
           <Airport v-else-if="active === 'airport'" />
+          <Drivers v-else-if="active === 'drivers'" />
           <Dashboard v-else />
         </div>
       </main>

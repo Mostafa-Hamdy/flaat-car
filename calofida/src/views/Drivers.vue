@@ -1,12 +1,12 @@
 <script setup>
-import SelectBox from '../../components/SelectBox.vue'
+import SelectBox from '../components/SelectBox.vue'
 import { ref, reactive, computed } from 'vue'
-import { useDriversStore } from '../../stores/collections.js'
-import { useAuthStore } from '../../stores/auth.js'
-import { printTable } from '../../utils/print.js'
-import Modal from '../../components/Modal.vue'
-import FilterClear from '../../components/FilterClear.vue'
-import ExpiryBadge from '../../components/ExpiryBadge.vue'
+import { useDriversStore } from '../stores/collections.js'
+import { useAuthStore } from '../stores/auth.js'
+import { printTable } from '../utils/print.js'
+import Modal from '../components/Modal.vue'
+import FilterClear from '../components/FilterClear.vue'
+import ExpiryBadge from '../components/ExpiryBadge.vue'
 
 const store = useDriversStore()
 const auth = useAuthStore()
