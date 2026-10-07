@@ -1,4 +1,5 @@
 <script setup>
+import SelectBox from '../components/SelectBox.vue'
 import { ref, reactive, computed } from 'vue'
 import { useCarsStore } from '../stores/collections.js'
 import { useAuthStore } from '../stores/auth.js'
@@ -79,11 +80,11 @@ async function del(c) {
       </div>
       <div class="field" :class="{ 'filter-active': statusF !== 'active' }">
         <label>الحالة</label>
-        <select v-model="statusF">
+        <SelectBox v-model="statusF">
           <option value="">الكل</option>
           <option value="active">نشطة</option>
           <option value="inactive">غير نشطة</option>
-        </select>
+        </SelectBox>
       </div>
       <FilterClear :active="anyFilter" @clear="clear" />
     </div>
@@ -130,7 +131,7 @@ async function del(c) {
         <div class="field"><label>لوحة رقم</label><input v-model="form.plate"></div>
         <div class="field">
           <label>الحالة</label>
-          <select v-model="form.status"><option value="active">نشطة</option><option value="inactive">غير نشطة</option></select>
+          <SelectBox v-model="form.status"><option value="active">نشطة</option><option value="inactive">غير نشطة</option></SelectBox>
         </div>
         <div class="field"><label>تاريخ الانضمام للأسطول</label><input v-model="form.joinDate" type="date"></div>
         <div class="field"><label>ماركة السيارة</label><input v-model="form.brand"></div>

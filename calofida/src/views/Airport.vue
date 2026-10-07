@@ -1,4 +1,5 @@
 <script setup>
+import SelectBox from '../components/SelectBox.vue'
 import { ref, reactive, computed } from 'vue'
 import { useAirportStore, useCarsStore, useDriversStore } from '../stores/collections.js'
 import { useAuthStore } from '../stores/auth.js'
@@ -91,20 +92,20 @@ async function del(a) {
       </div>
       <div class="field" :class="{ 'filter-active': typeF }">
         <label>النوع</label>
-        <select v-model="typeF">
+        <SelectBox v-model="typeF">
           <option value="">كل الأنواع</option>
           <option value="استلام">استلام من المطار</option>
           <option value="توصيل">توصيل إلى المطار</option>
-        </select>
+        </SelectBox>
       </div>
       <div class="field" :class="{ 'filter-active': statusF }">
         <label>الحالة</label>
-        <select v-model="statusF">
+        <SelectBox v-model="statusF">
           <option value="">كل الحالات</option>
           <option value="upcoming">قادم</option>
           <option value="done">تم</option>
           <option value="cancelled">ملغي</option>
-        </select>
+        </SelectBox>
       </div>
       <FilterClear :active="anyFilter" @clear="clearFilters" />
     </div>
@@ -152,29 +153,29 @@ async function del(a) {
         <div class="field"><label>رقم هاتف العميل</label><input v-model="form.phone"></div>
         <div class="field">
           <label>النوع</label>
-          <select v-model="form.type"><option value="استلام">استلام من المطار</option><option value="توصيل">توصيل إلى المطار</option></select>
+          <SelectBox v-model="form.type"><option value="استلام">استلام من المطار</option><option value="توصيل">توصيل إلى المطار</option></SelectBox>
         </div>
         <div class="field"><label>التاريخ</label><input v-model="form.date" type="date"></div>
         <div class="field"><label>الوقت</label><input v-model="form.time" type="time"></div>
         <div class="field"><label>رقم الرحلة</label><input v-model="form.flight" placeholder="مثال: MS 785"></div>
         <div class="field">
           <label>السيارة المخصصة (اختياري)</label>
-          <select v-model="form.car">
+          <SelectBox v-model="form.car">
             <option value="">— بدون —</option>
             <option v-for="c in carsStore.items" :key="c.id" :value="c.plate">{{ c.plate }} — {{ c.brand }} {{ c.model }}</option>
-          </select>
+          </SelectBox>
         </div>
         <div class="field">
           <label>السائق المخصص (اختياري)</label>
-          <select v-model="form.driver">
+          <SelectBox v-model="form.driver">
             <option value="">— بدون —</option>
             <option v-for="d in driverChoices" :key="d.name" :value="d.name">{{ d.label }}</option>
-          </select>
+          </SelectBox>
         </div>
         <div class="field full"><label>مكان الاستلام / التسليم</label><input v-model="form.location" placeholder="مثال: صالة الوصول 3 — أو — عنوان الفندق"></div>
         <div class="field">
           <label>الحالة</label>
-          <select v-model="form.status"><option value="upcoming">قادم</option><option value="done">تم</option><option value="cancelled">ملغي</option></select>
+          <SelectBox v-model="form.status"><option value="upcoming">قادم</option><option value="done">تم</option><option value="cancelled">ملغي</option></SelectBox>
         </div>
         <div class="field full"><label>ملاحظات</label><textarea v-model="form.notes" rows="2"></textarea></div>
       </div>

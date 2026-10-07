@@ -1,4 +1,5 @@
 <script setup>
+import SelectBox from './SelectBox.vue'
 import { reactive, computed, watch } from 'vue'
 import { useOpsStore } from '../stores/ops.js'
 import { fmtMoney } from '../utils/helpers.js'
@@ -47,16 +48,16 @@ async function clearRow() {
       <div class="ops-car-sub">{{ car.brand }} {{ car.model }}</div>
     </td>
     <td>
-      <select v-model="draft.driver" class="ops-cell" :disabled="!editable" @change="save">
+      <SelectBox v-model="draft.driver" class="ops-cell" :disabled="!editable" @change="save">
         <option value=""></option>
         <option v-for="n in driverOptions" :key="n" :value="n">{{ n }}</option>
-      </select>
+      </SelectBox>
     </td>
     <td>
-      <select v-model="draft.kind" class="ops-cell" :disabled="!editable" @change="save">
+      <SelectBox v-model="draft.kind" class="ops-cell" :disabled="!editable" @change="save">
         <option value="تشغيلة">تشغيلة</option>
         <option value="إيجار">إيجار</option>
-      </select>
+      </SelectBox>
     </td>
     <td><input v-model="draft.contract" class="ops-cell" :disabled="!editable" @change="save"></td>
     <td><input v-model="draft.km1" class="ops-cell num" type="number" step="1" :disabled="!editable" @change="save"></td>

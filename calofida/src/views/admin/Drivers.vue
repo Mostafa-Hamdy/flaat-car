@@ -1,4 +1,5 @@
 <script setup>
+import SelectBox from '../../components/SelectBox.vue'
 import { ref, reactive, computed } from 'vue'
 import { useDriversStore } from '../../stores/collections.js'
 import { useAuthStore } from '../../stores/auth.js'
@@ -71,11 +72,11 @@ async function del(d) {
       </div>
       <div class="field" :class="{ 'filter-active': statusF }">
         <label>الحالة</label>
-        <select v-model="statusF">
+        <SelectBox v-model="statusF">
           <option value="">الكل</option>
           <option value="active">نشط</option>
           <option value="inactive">غير نشط</option>
-        </select>
+        </SelectBox>
       </div>
       <FilterClear :active="anyFilter" @clear="clear" />
     </div>
@@ -123,7 +124,7 @@ async function del(d) {
         <div class="field"><label>الاسم على التأمين</label><input v-model="form.ins_name"></div>
         <div class="field">
           <label>الحالة</label>
-          <select v-model="form.status"><option value="active">نشط</option><option value="inactive">غير نشط</option></select>
+          <SelectBox v-model="form.status"><option value="active">نشط</option><option value="inactive">غير نشط</option></SelectBox>
         </div>
         <div class="field full"><label>ملاحظات</label><textarea v-model="form.notes" rows="2"></textarea></div>
       </div>

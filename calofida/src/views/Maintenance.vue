@@ -1,4 +1,5 @@
 <script setup>
+import SelectBox from '../components/SelectBox.vue'
 import { ref, reactive, computed } from 'vue'
 import { useMaintStore, useCarsStore, useMaintItemsStore } from '../stores/collections.js'
 import { useAuthStore } from '../stores/auth.js'
@@ -131,19 +132,19 @@ async function del(m) {
       </div>
       <div class="field" :class="{ 'filter-active': carF }">
         <label>السيارة</label>
-        <select v-model="carF">
+        <SelectBox v-model="carF">
           <option value="">كل السيارات</option>
           <option v-for="c in carsStore.items" :key="c.id" :value="c.plate">{{ c.plate }} — {{ c.brand }}</option>
-        </select>
+        </SelectBox>
       </div>
       <div class="field" :class="{ 'filter-active': statusF }">
         <label>حالة الصيانة القادمة</label>
-        <select v-model="statusF">
+        <SelectBox v-model="statusF">
           <option value="">كل الحالات</option>
           <option value="ok">سارية</option>
           <option value="warn">قريبة</option>
           <option value="bad">متأخرة</option>
-        </select>
+        </SelectBox>
       </div>
       <FilterClear :active="anyFilter" @clear="clearFilters" />
     </div>
@@ -209,10 +210,10 @@ async function del(m) {
       <div class="form-grid">
         <div class="field">
           <label>السيارة</label>
-          <select v-model="form.car">
+          <SelectBox v-model="form.car">
             <option value="">اختر السيارة</option>
             <option v-for="c in carChoices" :key="c.plate" :value="c.plate">{{ c.label }}</option>
-          </select>
+          </SelectBox>
         </div>
         <div class="field"><label>تاريخ الصيانة</label><input v-model="form.date" type="date"></div>
         <div class="field">

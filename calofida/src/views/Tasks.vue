@@ -1,4 +1,5 @@
 <script setup>
+import SelectBox from '../components/SelectBox.vue'
 import { ref, reactive, computed } from 'vue'
 import { useTasksStore, useCarsStore } from '../stores/collections.js'
 import { useAuthStore } from '../stores/auth.js'
@@ -77,12 +78,12 @@ async function del(t) {
         </div>
         <div class="field" :class="{ 'filter-active': prioF }">
           <label>الأولوية</label>
-          <select v-model="prioF">
+          <SelectBox v-model="prioF">
             <option value="">كل الأولويات</option>
             <option value="عاجل">عاجل</option>
             <option value="مهم">مهم</option>
             <option value="عادي">عادي</option>
-          </select>
+          </SelectBox>
         </div>
         <FilterClear :active="anyFilter" @clear="clearFilters" />
       </div>
@@ -152,18 +153,18 @@ async function del(t) {
         <div class="field"><label>تاريخ الاستحقاق</label><input v-model="form.duedate" type="date"></div>
         <div class="field">
           <label>السيارة المرتبطة (اختياري)</label>
-          <select v-model="form.car">
+          <SelectBox v-model="form.car">
             <option value="">— بدون —</option>
             <option v-for="c in carsStore.items" :key="c.id" :value="c.plate">{{ c.plate }} — {{ c.brand }} {{ c.model }}</option>
-          </select>
+          </SelectBox>
         </div>
         <div class="field">
           <label>الأولوية</label>
-          <select v-model="form.priority"><option value="عادي">عادي</option><option value="مهم">مهم</option><option value="عاجل">عاجل</option></select>
+          <SelectBox v-model="form.priority"><option value="عادي">عادي</option><option value="مهم">مهم</option><option value="عاجل">عاجل</option></SelectBox>
         </div>
         <div class="field">
           <label>الحالة</label>
-          <select v-model="form.status"><option value="open">قيد الانتظار</option><option value="done">تم الإنجاز</option></select>
+          <SelectBox v-model="form.status"><option value="open">قيد الانتظار</option><option value="done">تم الإنجاز</option></SelectBox>
         </div>
         <div class="field full"><label>ملاحظات</label><textarea v-model="form.notes" rows="2"></textarea></div>
       </div>
