@@ -11,7 +11,8 @@ import FilterClear from '../components/FilterClear.vue'
 const store = useTasksStore()
 const carsStore = useCarsStore()
 const auth = useAuthStore()
-const canEdit = computed(() => auth.canEdit('tasks'))
+const canAdd = computed(() => auth.can('tasks', 'add'))
+const canEdit = computed(() => auth.can('tasks', 'edit'))
 
 const q = ref('')
 const prioF = ref('')
@@ -66,7 +67,7 @@ async function del(t) {
         <h2 style="margin:0">المهام القادمة</h2>
         <div style="display:flex;gap:8px">
           <button class="btn secondary" @click="printTable(pendingTable, 'المهام القادمة')">🖨️ طباعة</button>
-          <button v-if="canEdit" class="btn primary" @click="add">+ إضافة مهمة</button>
+          <button v-if="canAdd" class="btn primary" @click="add">+ إضافة مهمة</button>
         </div>
       </div>
     <div class="panel-body">

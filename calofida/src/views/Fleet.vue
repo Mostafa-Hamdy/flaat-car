@@ -10,7 +10,8 @@ import ExpiryBadge from '../components/ExpiryBadge.vue'
 
 const store = useCarsStore()
 const auth = useAuthStore()
-const canEdit = computed(() => auth.canEdit('cars'))
+const canAdd = computed(() => auth.can('cars', 'add'))
+const canEdit = computed(() => auth.can('cars', 'edit'))
 
 const q = ref('')
 const statusF = ref('active')
@@ -68,7 +69,7 @@ async function del(c) {
       <h2 style="margin:0">بيان السيارات</h2>
       <div style="display:flex;gap:8px">
         <button class="btn secondary" @click="printTable(table, 'بيان السيارات')">🖨️ طباعة</button>
-        <button v-if="canEdit" class="btn primary" @click="add">+ إضافة سيارة</button>
+        <button v-if="canAdd" class="btn primary" @click="add">+ إضافة سيارة</button>
       </div>
     </div>
     <div class="panel-body">

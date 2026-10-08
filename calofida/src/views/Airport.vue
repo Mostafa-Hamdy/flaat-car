@@ -11,7 +11,8 @@ const store = useAirportStore()
 const carsStore = useCarsStore()
 const drivers = useDriversStore()
 const auth = useAuthStore()
-const canEdit = computed(() => auth.canEdit('airport'))
+const canAdd = computed(() => auth.can('airport', 'add'))
+const canEdit = computed(() => auth.can('airport', 'edit'))
 
 const STATUS_LABEL = { upcoming: 'قادم', done: 'تم', cancelled: 'ملغي' }
 const STATUS_CLS = { upcoming: 'warn', done: 'ok', cancelled: 'bad' }
@@ -80,7 +81,7 @@ async function del(a) {
       <h2 style="margin:0">مواعيد المطار</h2>
       <div style="display:flex;gap:8px">
         <button class="btn secondary" @click="printTable(table, 'مواعيد المطار')">🖨️ طباعة</button>
-        <button v-if="canEdit" class="btn primary" @click="add">+ إضافة موعد</button>
+        <button v-if="canAdd" class="btn primary" @click="add">+ إضافة موعد</button>
       </div>
     </div>
     <div class="panel-body">

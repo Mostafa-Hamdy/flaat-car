@@ -9,7 +9,8 @@ import FilterClear from '../../components/FilterClear.vue'
 
 const store = useMaintItemsStore()
 const auth = useAuthStore()
-const canEdit = computed(() => auth.canEdit('admin'))
+const canAdd = computed(() => auth.can('maintitems', 'add'))
+const canEdit = computed(() => auth.can('maintitems', 'edit'))
 
 const q = ref('')
 const rows = computed(() => {
@@ -45,7 +46,7 @@ async function del(it) {
       <h3>دليل بنود الصيانة الشائعة</h3>
       <div style="display:flex;gap:8px">
         <button class="btn secondary" @click="printTable(table, 'دليل بنود الصيانة')">🖨️ طباعة</button>
-        <button v-if="canEdit" class="btn primary" @click="add">+ إضافة بند</button>
+        <button v-if="canAdd" class="btn primary" @click="add">+ إضافة بند</button>
       </div>
     </div>
 

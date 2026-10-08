@@ -1,34 +1,37 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import { useAuthStore, PAGES, DEFAULT_CAN_EDIT } from '../../stores/auth.js'
+import { useAuthStore, PERM_PAGES, PERM_ACTIONS, pageActions, allPerms, permsOf } from '../../stores/auth.js'
 import Modal from '../../components/Modal.vue'
 
 const auth = useAuthStore()
-const canManage = computed(() => auth.canEdit('admin'))
+const canAdd = computed(() => auth.can('users', 'add'))
+const canEdit = computed(() => auth.can('users', 'edit'))
 
-const PAGE_LABEL = {
-  ops: 'التشغيل اليومي', cars: 'بيان السيارات', maint: 'الصيانة', tasks: 'المهام',
-  airport: 'مواعيد المطار', admin: 'الأدمن (ماستر داتا + إعدادات)',
-}
+// One-line summary per user: pages they can see, with what else they may do there.
+const SHORT = { add: 'إضافة', edit: 'تعديل' }
 const pagesLabel = (u) => {
-  const on = PAGES.filter((k) => u.canEdit && u.canEdit[k])
-  return on.length ? on.map((k) => PAGE_LABEL[k].replace(' (ماستر داتا + إعدادات)', '')).join('، ') : '— بدون تعديل —'
+  const perms = permsOf(u)
+  const on = PERM_PAGES.filter((p) => perms[p.key].view)
+  if (!on.length) return '— لا يرى أي صفحة —'
+  return on.map((p) => {
+    const extra = ['add', 'edit'].filter((a) => perms[p.key][a]).map((a) => SHORT[a])
+    return p.label.replace('الأدمن › ', '') + (extra.length ? ` (${extra.join(' + ')})` : '')
+  }).join('، ')
 }
 const isMe = (u) => auth.currentUser && auth.currentUser.id === u.id
 
-const blank = () => ({ name: '', username: '', password: '', securityQ: '', securityA: '', canEdit: { ...DEFAULT_CAN_EDIT }, showAdmin: true })
+const blank = () => ({ name: '', username: '', password: '', securityQ: '', securityA: '', perms: allPerms() })
 const editingId = ref(null)
 const form = reactive(blank())
 const open = ref(false)
 
-function add() { editingId.value = null; Object.assign(form, blank(), { canEdit: { ...DEFAULT_CAN_EDIT } }); open.value = true }
+function add() { editingId.value = null; Object.assign(form, blank()); open.value = true }
 function edit(u) {
   editingId.value = u.id
   Object.assign(form, blank(), {
     name: u.name || '', username: u.username || '', password: '',
     securityQ: u.securityQ || '', securityA: u.securityA || '',
-    canEdit: Object.fromEntries(PAGES.map((k) => [k, !!(u.canEdit && u.canEdit[k])])),
-    showAdmin: !!u.showAdmin,
+    perms: permsOf(u),
   })
   open.value = true
 }
@@ -39,16 +42,28 @@ async function save() {
   if (!name || !username) return alert('من فضلك اكتب الاسم واسم الدخول')
   if (auth.users.some((u) => u.username === username && u.id !== editingId.value)) return alert('اسم الدخول ده مستخدم بالفعل، اختار اسم تاني')
   if (!editingId.value && !form.password) return alert('من فضلك اكتب كلمة مرور للمستخدم الجديد')
-  // Removing admin edit rights from your own account would lock you out of this page.
-  if (editingId.value && auth.currentUser.id === editingId.value && !form.canEdit.admin) {
-    return alert('مينفعش تشيل صلاحية تعديل الأدمن من حسابك وانت مسجل دخول بيه')
+  // Removing your own access to this page would lock you out of managing permissions.
+  if (editingId.value && auth.currentUser.id === editingId.value && !(form.perms.users.view && form.perms.users.edit)) {
+    return alert('مينفعش تشيل صلاحية الظهور والتعديل في "المستخدمين والصلاحيات" من حسابك وانت مسجل دخول بيه')
   }
   await auth.upsertUser({
     name, username,
     securityQ: form.securityQ.trim(), securityA: form.securityA.trim(),
-    canEdit: { ...form.canEdit }, showAdmin: form.showAdmin,
+    perms: JSON.parse(JSON.stringify(form.perms)),
   }, form.password, editingId.value)
   open.value = false
+}
+
+// Add/edit only make sense on a page the user can see; unticking "view" clears the rest, ticking another ticks "view".
+function setPerm(page, action, on) {
+  const p = form.perms[page.key]
+  p[action] = on
+  if (on && action !== 'view') p.view = true
+  if (!on && action === 'view') pageActions(page).forEach((a) => { p[a] = false })
+}
+function preset(kind) {
+  form.perms = kind === 'all' ? allPerms() : kind === 'none' ? allPerms(false) : Object.fromEntries(
+    PERM_PAGES.map((p) => [p.key, Object.fromEntries(PERM_ACTIONS.map((a) => [a.key, a.key === 'view' && pageActions(p).includes('view')]))]))
 }
 
 async function del(u) {
@@ -63,24 +78,23 @@ async function del(u) {
   <section class="panel">
     <div class="panel-head">
       <h2 style="margin:0">👥 المستخدمين والصلاحيات</h2>
-      <button v-if="canManage" class="btn primary" @click="add">+ إضافة مستخدم</button>
+      <button v-if="canAdd" class="btn primary" @click="add">+ إضافة مستخدم</button>
     </div>
     <div class="panel-body">
     <p style="color:var(--ink-soft); margin-top:0;">
-      كل شخص بيفتح البرنامج بيسجّل دخول باسمه وكلمة المرور بتاعته. من هنا تتحكم في مين يقدر يعدّل في كل صفحة، ومين تظهر له صفحة الأدمن دي أصلًا.
+      كل شخص بيفتح البرنامج بيسجّل دخول باسمه وكلمة المرور بتاعته. من هنا تتحكم لكل مستخدم وفي كل صفحة: يشوفها (ظهور)، يضيف فيها (إضافة)، يعدّل ويحذف فيها (تعديل).
       ⚠️ البيانات محفوظة على هذا الجهاز بس، وكلمات المرور بتتخزن مشفّرة (hash)، لكن ده يفضل تنظيم للاستخدام المشترك مش حماية أمنية قوية.
     </p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>الاسم</th><th>اسم الدخول</th><th>صفحات التعديل المسموحة</th><th>تظهر له صفحة الأدمن</th><th></th></tr></thead>
+        <thead><tr><th>الاسم</th><th>اسم الدخول</th><th>الصفحات والصلاحيات</th><th></th></tr></thead>
         <tbody>
           <tr v-for="u in auth.users" :key="u.id">
             <td>{{ u.name }} <span v-if="isMe(u)" class="badge ok">أنت</span></td>
             <td class="num">{{ u.username }}</td>
             <td style="font-size:12.5px;white-space:normal">{{ pagesLabel(u) }}</td>
-            <td><span class="badge" :class="u.showAdmin ? 'ok' : 'bad'">{{ u.showAdmin ? 'نعم' : 'لا' }}</span></td>
             <td>
-              <template v-if="canManage">
+              <template v-if="canEdit">
                 <button class="btn secondary small" @click="edit(u)">تعديل</button>
                 <button class="btn danger small" :disabled="isMe(u)" :title="isMe(u) ? 'محتاج تسجل دخول بحساب تاني عشان تحذف حسابك الحالي' : ''" @click="del(u)">حذف</button>
               </template>
@@ -100,13 +114,27 @@ async function del(u) {
         <div class="field full"><label>سؤال أمان (لاسترجاع كلمة المرور بنفسه لو نسيها)</label><input v-model="form.securityQ" placeholder="مثال: اسم أول عربية دخلت الأسطول؟"></div>
         <div class="field full"><label>إجابة سؤال الأمان</label><input v-model="form.securityA"></div>
         <div class="field full">
-          <label>الصفحات المسموح له يعدّل فيها</label>
-          <div class="checks">
-            <label v-for="k in PAGES" :key="k" class="check"><input v-model="form.canEdit[k]" type="checkbox"> {{ PAGE_LABEL[k] }}</label>
+          <label>الصلاحيات لكل صفحة</label>
+          <div class="presets">
+            <button type="button" class="btn secondary small" @click="preset('all')">كل الصلاحيات</button>
+            <button type="button" class="btn secondary small" @click="preset('view')">ظهور فقط</button>
+            <button type="button" class="btn secondary small" @click="preset('none')">بدون صلاحيات</button>
           </div>
-        </div>
-        <div class="field full">
-          <label class="check"><input v-model="form.showAdmin" type="checkbox"> تظهر له صفحة "الأدمن" في القائمة أصلًا</label>
+          <div class="table-wrap">
+            <table class="perm-table">
+              <thead><tr><th>الصفحة</th><th v-for="a in PERM_ACTIONS" :key="a.key">{{ a.label }}</th></tr></thead>
+              <tbody>
+                <tr v-for="p in PERM_PAGES" :key="p.key">
+                  <td>{{ p.label }}</td>
+                  <td v-for="a in PERM_ACTIONS" :key="a.key" class="perm-cell">
+                    <input v-if="pageActions(p).includes(a.key)" type="checkbox" :checked="form.perms[p.key][a.key]" @change="setPerm(p, a.key, $event.target.checked)">
+                    <span v-else>—</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="hint">"تعديل" بتشمل الحذف. الإضافة والتعديل بيشتغلوا بس لو الصفحة ظاهرة للمستخدم.</div>
         </div>
       </div>
       <template #footer>
@@ -120,8 +148,9 @@ async function del(u) {
 
 <style scoped>
 .hint{font-size:11.5px;color:var(--ink-soft);padding-top:8px}
-.checks{display:flex;flex-wrap:wrap;gap:14px;padding-top:6px}
-.check{display:flex;align-items:center;gap:6px;font-weight:600;font-size:13px;color:var(--ink);cursor:pointer}
-.check input{width:auto}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 8px}
+.perm-table th,.perm-table td{padding:6px 10px}
+.perm-table th:not(:first-child),.perm-cell{text-align:center;width:70px}
+.perm-cell input{width:auto;cursor:pointer}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 </style>

@@ -14,7 +14,8 @@ const ops = useOpsStore()
 const carsStore = useCarsStore()
 const drivers = useDriversStore()
 const auth = useAuthStore()
-const editable = computed(() => auth.canEdit('ops'))
+const canAdd = computed(() => auth.can('ops', 'add'))
+const canEdit = computed(() => auth.can('ops', 'edit'))
 
 // One calendar month is rendered at a time (keeps the DOM small and typing fast).
 const now = new Date()
@@ -173,7 +174,8 @@ const table = ref(null)
               :is-first="i === 0"
               :group-size="g.cars.length"
               :driver-names="driverNames"
-              :editable="editable"
+              :can-add="canAdd"
+              :can-edit="canEdit"
             />
           </template>
         </tbody>

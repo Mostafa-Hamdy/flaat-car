@@ -9,7 +9,7 @@ import { buildBackup, restoreBackup, validateBackup, downloadBlob } from '../../
 import { exportExcel } from '../../utils/excel.js'
 
 const auth = useAuthStore()
-const canImport = computed(() => auth.canEdit('admin'))
+const canImport = computed(() => auth.can('backup', 'edit'))
 const fileInput = ref(null)
 const busy = ref(false)
 

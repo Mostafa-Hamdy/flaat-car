@@ -12,7 +12,8 @@ const store = useMaintStore()
 const carsStore = useCarsStore()
 const catalog = useMaintItemsStore()
 const auth = useAuthStore()
-const canEdit = computed(() => auth.canEdit('maint'))
+const canAdd = computed(() => auth.can('maint', 'add'))
+const canEdit = computed(() => auth.can('maint', 'edit'))
 
 const q = ref('')
 const carF = ref('')
@@ -120,7 +121,7 @@ async function del(m) {
       <h2 style="margin:0">سجل الصيانة</h2>
       <div style="display:flex;gap:8px">
         <button class="btn secondary" @click="printTable(table, 'سجل الصيانة')">🖨️ طباعة</button>
-        <button v-if="canEdit" class="btn primary" @click="add">+ إضافة صيانة</button>
+        <button v-if="canAdd" class="btn primary" @click="add">+ إضافة صيانة</button>
       </div>
     </div>
     <div class="panel-body">
