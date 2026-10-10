@@ -1,4 +1,5 @@
 <script setup>
+import SelectBox from '../components/SelectBox.vue'
 import { ref, computed } from 'vue'
 import { useOpsStore } from '../stores/ops.js'
 import { useCarsStore, useMaintStore, useTasksStore } from '../stores/collections.js'
@@ -109,11 +110,11 @@ const alertsTable = ref(null)
           </div>
           <div class="field" :class="{ 'filter-active': half }">
             <label>نصف الشهر</label>
-            <select v-model="half">
+            <SelectBox v-model="half">
               <option value="">الكل</option>
               <option value="أول">أول 15 يوم</option>
               <option value="أخر">آخر 15 يوم</option>
-            </select>
+            </SelectBox>
           </div>
           <div class="field" :class="{ 'filter-active': carSel.length }" style="min-width:170px">
             <label>السيارة (اختيار متعدد)</label>

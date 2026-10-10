@@ -1,4 +1,5 @@
 <script setup>
+import SelectBox from '../components/SelectBox.vue'
 import { ref, reactive, computed } from 'vue'
 import { useCarsStore } from '../stores/collections.js'
 import { useAuthStore } from '../stores/auth.js'
@@ -9,20 +10,29 @@ import ExpiryBadge from '../components/ExpiryBadge.vue'
 
 const store = useCarsStore()
 const auth = useAuthStore()
-const canEdit = computed(() => auth.canEdit('cars'))
+const canAdd = computed(() => auth.can('cars', 'add'))
+const canEdit = computed(() => auth.can('cars', 'edit'))
 
 const q = ref('')
+const statusF = ref('active')
+const anyFilter = computed(() => !!(q.value.trim() || statusF.value !== 'active'))
+const clear = () => { q.value = ''; statusF.value = 'active' }
 
-// Cars marked inactive (Admin > Master data > Car status) are hidden from this page.
-const activeCars = computed(() => store.items.filter((c) => (c.status || 'active') !== 'inactive'))
+// Inactive cars are hidden from daily ops / maintenance pickers; here they stay listed (filterable) so they can be reactivated.
+const isActive = (c) => (c.status || 'active') !== 'inactive'
 const rows = computed(() => {
   const s = q.value.trim().toLowerCase()
-  return activeCars.value.filter((c) => !s || [c.plate, c.brand, c.model, c.ins_name].join(' ').toLowerCase().includes(s))
+  return store.items
+    .filter((c) => (!s || [c.plate, c.brand, c.model, c.ins_name].join(' ').toLowerCase().includes(s)) && (!statusF.value || (c.status || 'active') === statusF.value))
+    .sort((a, b) => (a.plate || '').localeCompare(b.plate || '', 'ar'))
 })
 
 const TEXT_FIELDS = ['plate', 'brand', 'model', 'category', 'color', 'chassis', 'engine', 'owner', 'location', 'ins_name', 'ins_no']
-const DATE_FIELDS = ['lic_start', 'lic_end', 'org_start', 'org_end']
-const blank = () => Object.fromEntries([...TEXT_FIELDS, ...DATE_FIELDS].map((k) => [k, k === 'owner' ? 'الشركة' : '']))
+const DATE_FIELDS = ['lic_start', 'lic_end', 'org_start', 'org_end', 'joinDate']
+const blank = () => ({
+  ...Object.fromEntries([...TEXT_FIELDS, ...DATE_FIELDS].map((k) => [k, k === 'owner' ? 'الشركة' : ''])),
+  status: 'active',
+})
 
 const editingId = ref(null)
 const form = reactive(blank())
@@ -31,7 +41,10 @@ const table = ref(null)
 
 function add() { editingId.value = null; Object.assign(form, blank()); open.value = true }
 function edit(c) { editingId.value = c.id; Object.assign(form, blank(), pick(c)); open.value = true }
-const pick = (c) => Object.fromEntries([...TEXT_FIELDS, ...DATE_FIELDS].map((k) => [k, c[k] || '']))
+const pick = (c) => ({
+  ...Object.fromEntries([...TEXT_FIELDS, ...DATE_FIELDS].map((k) => [k, c[k] || ''])),
+  status: c.status || 'active',
+})
 
 async function save() {
   const plate = form.plate.trim()
@@ -40,7 +53,7 @@ async function save() {
   const rec = {}
   TEXT_FIELDS.forEach((k) => { rec[k] = form[k].trim() })
   DATE_FIELDS.forEach((k) => { rec[k] = form[k] })
-  // upsert merges into the stored car, so status/joinDate (managed in the Admin page) are kept.
+  rec.status = form.status || 'active'
   await store.upsert(rec, editingId.value)
   open.value = false
 }
@@ -56,7 +69,7 @@ async function del(c) {
       <h2 style="margin:0">بيان السيارات</h2>
       <div style="display:flex;gap:8px">
         <button class="btn secondary" @click="printTable(table, 'بيان السيارات')">🖨️ طباعة</button>
-        <button v-if="canEdit" class="btn primary" @click="add">+ إضافة سيارة</button>
+        <button v-if="canAdd" class="btn primary" @click="add">+ إضافة سيارة</button>
       </div>
     </div>
     <div class="panel-body">
@@ -66,14 +79,22 @@ async function del(c) {
         <label>بحث (لوحة / ماركة / سائق)</label>
         <input v-model="q" placeholder="اكتب للبحث...">
       </div>
-      <FilterClear :active="!!q.trim()" @clear="q = ''" />
+      <div class="field" :class="{ 'filter-active': statusF !== 'active' }">
+        <label>الحالة</label>
+        <SelectBox v-model="statusF">
+          <option value="">الكل</option>
+          <option value="active">نشطة</option>
+          <option value="inactive">غير نشطة</option>
+        </SelectBox>
+      </div>
+      <FilterClear :active="anyFilter" @clear="clear" />
     </div>
 
     <div class="table-wrap">
       <table ref="table">
         <thead>
           <tr>
-            <th>لوحة رقم</th><th>الماركة</th><th>الموديل</th><th>الفئة</th><th>اللون</th>
+            <th>لوحة رقم</th><th>الحالة</th><th>تاريخ الانضمام</th><th>الماركة</th><th>الموديل</th><th>الفئة</th><th>اللون</th>
             <th>شاسية</th><th>ماتور</th><th>الجهة المالكة</th><th>التواجد</th>
             <th>انتهاء الرخصة</th><th>حالة الرخصة</th>
             <th>السائق (تأمينات)</th><th>رقم تأمين</th>
@@ -82,7 +103,10 @@ async function del(c) {
         </thead>
         <tbody>
           <tr v-for="c in rows" :key="c.id">
-            <td>{{ c.plate }}</td><td>{{ c.brand }}</td><td>{{ c.model }}</td><td>{{ c.category }}</td><td>{{ c.color }}</td>
+            <td>{{ c.plate }}</td>
+            <td><span class="badge" :class="isActive(c) ? 'ok' : 'bad'">{{ isActive(c) ? 'نشطة' : 'غير نشطة' }}</span></td>
+            <td class="num">{{ c.joinDate || '—' }}</td>
+            <td>{{ c.brand }}</td><td>{{ c.model }}</td><td>{{ c.category }}</td><td>{{ c.color }}</td>
             <td>{{ c.chassis }}</td><td>{{ c.engine }}</td><td>{{ c.owner }}</td><td>{{ c.location }}</td>
             <td class="num">{{ c.lic_end || '—' }}</td><td><ExpiryBadge :date="c.lic_end" /></td>
             <td>{{ c.ins_name }}</td><td class="num">{{ c.ins_no }}</td>
@@ -96,7 +120,7 @@ async function del(c) {
           </tr>
         </tbody>
       </table>
-      <div v-if="!activeCars.length" class="empty">
+      <div v-if="!store.items.length" class="empty">
         <div class="big">🚗</div>
         لا توجد سيارات مسجلة بعد — اضغط "إضافة سيارة" لبدء التسجيل
       </div>
@@ -106,6 +130,11 @@ async function del(c) {
     <Modal v-if="open" :title="editingId ? 'تعديل سيارة' : 'إضافة سيارة'" @close="open = false">
       <div class="form-grid">
         <div class="field"><label>لوحة رقم</label><input v-model="form.plate"></div>
+        <div class="field">
+          <label>الحالة</label>
+          <SelectBox v-model="form.status"><option value="active">نشطة</option><option value="inactive">غير نشطة</option></SelectBox>
+        </div>
+        <div class="field"><label>تاريخ الانضمام للأسطول</label><input v-model="form.joinDate" type="date"></div>
         <div class="field"><label>ماركة السيارة</label><input v-model="form.brand"></div>
         <div class="field"><label>الموديل</label><input v-model="form.model"></div>
         <div class="field"><label>الفئة</label><input v-model="form.category"></div>

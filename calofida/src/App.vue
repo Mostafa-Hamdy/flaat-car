@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useAuthStore } from './stores/auth.js'
 import { useThemeStore } from './stores/theme.js'
 import {
@@ -14,26 +14,31 @@ import Dashboard from './views/Dashboard.vue'
 import Maintenance from './views/Maintenance.vue'
 import Tasks from './views/Tasks.vue'
 import Airport from './views/Airport.vue'
+import Drivers from './views/Drivers.vue'
 import { useOpsStore } from './stores/ops.js'
 
 const auth = useAuthStore()
 useThemeStore()
 
-// Page ids match the legacy `data-view` values and the permission keys in auth.canEdit.
+// A tab shows only when the user has "view" on one of its permission pages (see PERM_PAGES in the auth store).
 const TABS = [
-  { id: 'dashboard', label: 'لوحة التحكم' },
-  { id: 'ops', label: 'التشغيل اليومي' },
-  { id: 'cars', label: 'بيان السيارات' },
-  { id: 'maint', label: 'الصيانة' },
-  { id: 'tasks', label: 'المهام القادمة' },
-  { id: 'airport', label: 'مواعيد المطار' },
-  { id: 'settings', label: '⚙️ الأدمن', adminOnly: true },
+  { id: 'dashboard', label: 'لوحة التحكم', perms: ['dashboard'] },
+  { id: 'ops', label: 'التشغيل اليومي', perms: ['ops'] },
+  { id: 'cars', label: 'بيان السيارات', perms: ['cars'] },
+  { id: 'maint', label: 'الصيانة', perms: ['maint'] },
+  { id: 'tasks', label: 'المهام القادمة', perms: ['tasks'] },
+  { id: 'airport', label: 'مواعيد المطار', perms: ['airport'] },
+  { id: 'drivers', label: 'السائقين', perms: ['drivers'] },
+  { id: 'settings', label: '⚙️ الأدمن', perms: ['maintitems', 'users', 'backup', 'settings'] },
 ]
+const visibleTabs = computed(() => TABS.filter((t) => t.perms.some((k) => auth.can(k, 'view'))))
 
 const active = ref('dashboard')
 
-// Every login (and logout) lands on the dashboard, which everyone can see.
-watch(() => auth.currentUser?.id, () => { active.value = 'dashboard' })
+// Every login (and logout) lands on the first tab the user may see; a tab that loses access falls back too.
+const firstTab = () => visibleTabs.value[0]?.id || ''
+watch(() => auth.currentUser?.id, () => { active.value = firstTab() })
+watch(visibleTabs, (tabs) => { if (!tabs.some((t) => t.id === active.value)) active.value = firstTab() })
 
 const dbError = ref('')
 
@@ -55,17 +60,18 @@ onMounted(async () => {
   <template v-else-if="auth.ready">
     <Login v-if="!auth.currentUser" />
     <template v-else>
-      <AppHeader v-model="active" :tabs="TABS" />
+      <AppHeader v-model="active" :tabs="visibleTabs" />
       <main>
         <div :key="active" class="view">
-          <Admin v-if="active === 'settings' && auth.currentUser.showAdmin" />
+          <div v-if="!visibleTabs.length" class="card db-error">ما عندكش صلاحية لعرض أي صفحة — اطلب من الأدمن يفعّل صلاحيات حسابك.</div>
+          <Admin v-else-if="active === 'settings'" />
           <Dashboard v-else-if="active === 'dashboard'" />
           <DailyOps v-else-if="active === 'ops'" />
           <Fleet v-else-if="active === 'cars'" />
           <Maintenance v-else-if="active === 'maint'" />
           <Tasks v-else-if="active === 'tasks'" />
           <Airport v-else-if="active === 'airport'" />
-          <Dashboard v-else />
+          <Drivers v-else-if="active === 'drivers'" />
         </div>
       </main>
       <footer>ليموزين كالوفيدا · البيانات محفوظة محليًا على هذا الجهاز فقط</footer>

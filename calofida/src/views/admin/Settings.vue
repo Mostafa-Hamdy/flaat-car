@@ -1,17 +1,19 @@
 <script setup>
 import { useThemeStore, THEMES } from '../../stores/theme.js'
+import { useAuthStore } from '../../stores/auth.js'
 import Users from './Users.vue'
 import OwnPassword from './OwnPassword.vue'
 import Backup from './Backup.vue'
 
 const theme = useThemeStore()
+const auth = useAuthStore()
 </script>
 
 <template>
-  <Users />
-  <OwnPassword />
-  <Backup />
-  <section class="panel">
+  <Users v-if="auth.can('users')" />
+  <OwnPassword v-if="auth.can('settings')" />
+  <Backup v-if="auth.can('backup')" />
+  <section v-if="auth.can('settings')" class="panel">
     <div class="panel-head"><h2>🎨 مظهر البرنامج</h2></div>
     <div class="panel-body">
       <p style="color:var(--ink-soft); margin-top:0;">اختر الثيم اللي يناسبك — بيتحفظ على هذا الجهاز.</p>

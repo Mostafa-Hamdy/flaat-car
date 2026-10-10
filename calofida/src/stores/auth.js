@@ -4,8 +4,50 @@ import { uid } from '../utils/helpers.js'
 import { hashPassword, newSalt } from '../utils/crypto.js'
 
 const SESSION_KEY = 'limo_current_user_id_v1'
-export const PAGES = ['ops', 'cars', 'maint', 'tasks', 'airport', 'admin']
-export const DEFAULT_CAN_EDIT = { ops: true, cars: true, maint: true, tasks: true, admin: true, airport: true }
+// Per-page permissions: view (ظهور) / add (إضافة) / edit (تعديل — includes delete).
+export const PERM_ACTIONS = [
+  { key: 'view', label: 'ظهور' },
+  { key: 'add', label: 'إضافة' },
+  { key: 'edit', label: 'تعديل' },
+]
+export const PERM_PAGES = [
+  { key: 'dashboard', label: 'لوحة التحكم', actions: ['view'] },
+  { key: 'ops', label: 'التشغيل اليومي' },
+  { key: 'cars', label: 'بيان السيارات' },
+  { key: 'maint', label: 'الصيانة' },
+  { key: 'tasks', label: 'المهام القادمة' },
+  { key: 'airport', label: 'مواعيد المطار' },
+  { key: 'drivers', label: 'السائقين' },
+  { key: 'maintitems', label: 'الأدمن › بنود الصيانة' },
+  { key: 'users', label: 'الأدمن › المستخدمين والصلاحيات' },
+  { key: 'backup', label: 'الأدمن › النسخ الاحتياطي (التعديل = استيراد)', actions: ['view', 'edit'] },
+  { key: 'settings', label: 'الأدمن › المظهر وكلمة المرور', actions: ['view'] },
+]
+export const pageActions = (p) => p.actions || ['view', 'add', 'edit']
+const ADMIN_KEYS = ['maintitems', 'users', 'backup', 'settings']
+
+export const allPerms = (on = true) => Object.fromEntries(PERM_PAGES.map((p) => [p.key,
+  Object.fromEntries(PERM_ACTIONS.map((a) => [a.key, on && pageActions(p).includes(a.key)]))]))
+
+// Accounts created before per-action permissions only have `canEdit` (per page) and `showAdmin`; derive from those.
+export function permsOf(user) {
+  const out = allPerms(false)
+  if (!user) return out
+  if (user.perms) {
+    for (const p of PERM_PAGES) for (const a of pageActions(p)) out[p.key][a] = !!(user.perms[p.key] && user.perms[p.key][a])
+    return out
+  }
+  const ce = user.canEdit || {}
+  for (const p of PERM_PAGES) {
+    const adminPage = ADMIN_KEYS.includes(p.key)
+    const legacyKey = adminPage || p.key === 'drivers' ? 'admin' : p.key
+    const editOn = p.key !== 'dashboard' && p.key !== 'settings' && !!ce[legacyKey]
+    out[p.key].view = adminPage ? !!user.showAdmin : true
+    if (pageActions(p).includes('add')) out[p.key].add = editOn && out[p.key].view
+    if (pageActions(p).includes('edit')) out[p.key].edit = editOn && out[p.key].view
+  }
+  return out
+}
 
 // Legacy accounts store `password` in plain text; new/upgraded ones store salt + passwordHash.
 async function matches(user, password) {
@@ -23,7 +65,7 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({ users: [], currentUser: null, ready: false }),
   getters: {
     isFirstRun: (s) => s.users.length === 0,
-    canEdit: (s) => (page) => !!(s.currentUser && s.currentUser.canEdit && s.currentUser.canEdit[page]),
+    can: (s) => (page, action = 'view') => !!(s.currentUser && permsOf(s.currentUser)[page]?.[action]),
   },
   actions: {
     async init() {
@@ -44,7 +86,7 @@ export const useAuthStore = defineStore('auth', {
     },
     async createFirstUser({ name, username, password, securityQ, securityA }) {
       const rec = await withHash(
-        { id: uid(), name, username, securityQ, securityA, canEdit: { ...DEFAULT_CAN_EDIT }, showAdmin: true },
+        { id: uid(), name, username, securityQ, securityA, perms: allPerms() },
         password,
       )
       await this.saveUser(rec)

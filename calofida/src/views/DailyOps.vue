@@ -1,4 +1,5 @@
 <script setup>
+import SelectBox from '../components/SelectBox.vue'
 import { ref, computed, watch } from 'vue'
 import { useOpsStore } from '../stores/ops.js'
 import { useCarsStore, useDriversStore } from '../stores/collections.js'
@@ -13,7 +14,8 @@ const ops = useOpsStore()
 const carsStore = useCarsStore()
 const drivers = useDriversStore()
 const auth = useAuthStore()
-const editable = computed(() => auth.canEdit('ops'))
+const canAdd = computed(() => auth.can('ops', 'add'))
+const canEdit = computed(() => auth.can('ops', 'edit'))
 
 // One calendar month is rendered at a time (keeps the DOM small and typing fast).
 const now = new Date()
@@ -136,11 +138,11 @@ const table = ref(null)
       </div>
       <div class="field" :class="{ 'filter-active': half }">
         <label>نصف الشهر</label>
-        <select v-model="half">
+        <SelectBox v-model="half">
           <option value="">الكل</option>
           <option value="أول">أول 15 يوم</option>
           <option value="أخر">آخر 15 يوم</option>
-        </select>
+        </SelectBox>
       </div>
       <div class="field" :class="{ 'filter-active': carSel.length }" style="min-width:170px">
         <label>السيارة (اختيار متعدد)</label>
@@ -172,7 +174,8 @@ const table = ref(null)
               :is-first="i === 0"
               :group-size="g.cars.length"
               :driver-names="driverNames"
-              :editable="editable"
+              :can-add="canAdd"
+              :can-edit="canEdit"
             />
           </template>
         </tbody>
