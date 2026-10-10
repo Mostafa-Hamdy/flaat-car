@@ -1,13 +1,9 @@
 <script setup>
-import { computed } from 'vue'
 import { useAuthStore } from '../stores/auth.js'
 
 const props = defineProps({ tabs: Array, modelValue: String })
 const emit = defineEmits(['update:modelValue'])
 const auth = useAuthStore()
-
-// The admin tab is hidden entirely unless the user has the showAdmin flag.
-const visibleTabs = computed(() => props.tabs.filter((t) => !t.adminOnly || auth.currentUser?.showAdmin))
 </script>
 
 <template>
@@ -27,7 +23,7 @@ const visibleTabs = computed(() => props.tabs.filter((t) => !t.adminOnly || auth
     </div>
     <div class="tabs">
       <button
-        v-for="t in visibleTabs"
+        v-for="t in tabs"
         :key="t.id"
         class="tab"
         :class="{ active: modelValue === t.id }"

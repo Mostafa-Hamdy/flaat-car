@@ -1,14 +1,10 @@
 <script setup>
 import { ref } from 'vue'
-import Drivers from './Drivers.vue'
 import MaintCatalog from './MaintCatalog.vue'
-import CarsStatus from './CarsStatus.vue'
 
-const sub = ref('drivers')
+const sub = ref('maintitems')
 const subs = [
-  { id: 'drivers', label: '👤 السائقين', comp: Drivers },
   { id: 'maintitems', label: '🧰 بنود الصيانة', comp: MaintCatalog },
-  { id: 'carsstatus', label: '🚗 حالة السيارات', comp: CarsStatus },
 ]
 </script>
 

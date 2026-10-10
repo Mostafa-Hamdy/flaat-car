@@ -1,4 +1,5 @@
 <script setup>
+import SelectBox from '../components/SelectBox.vue'
 import { ref, reactive, computed } from 'vue'
 import { useAuthStore } from '../stores/auth.js'
 
@@ -82,10 +83,10 @@ async function doRecover() {
         <div class="form-grid">
           <div class="field full">
             <label>الحساب</label>
-            <select v-model="rec.userId" @change="pickAccount">
+            <SelectBox v-model="rec.userId" @change="pickAccount">
               <option value="">اختر الحساب</option>
               <option v-for="u in auth.users" :key="u.id" :value="u.id">{{ u.name }} ({{ u.username }})</option>
-            </select>
+            </SelectBox>
           </div>
           <template v-if="canRecover">
             <div class="field full"><label>{{ recUser.securityQ }}</label><input v-model="rec.answer" type="text"></div>
