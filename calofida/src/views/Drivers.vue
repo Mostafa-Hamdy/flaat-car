@@ -57,14 +57,15 @@ async function del(d) {
 </script>
 
 <template>
-  <div>
-    <div class="panel-head" style="padding:0 0 14px">
-      <h3>قائمة السائقين المسجلين</h3>
+  <section class="panel">
+    <div class="panel-head">
+      <h2 style="margin:0">السائقين</h2>
       <div style="display:flex;gap:8px">
         <button class="btn secondary" @click="printTable(table, 'قائمة السائقين')">🖨️ طباعة</button>
         <button v-if="canAdd" class="btn primary" @click="add">+ إضافة سائق</button>
       </div>
     </div>
+    <div class="panel-body">
 
     <div class="toolbar">
       <div class="field" :class="{ 'filter-active': q.trim() }">
@@ -134,5 +135,6 @@ async function del(d) {
         <button class="btn primary" @click="save">حفظ</button>
       </template>
     </Modal>
-  </div>
+    </div>
+  </section>
 </template>
