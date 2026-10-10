@@ -34,7 +34,7 @@ const rows = computed(() => {
     .sort((a, b) => (((a.date || '') + ' ' + (a.time || '')) < ((b.date || '') + ' ' + (b.time || '')) ? -1 : 1))
 })
 
-const blank = () => ({ client: '', phone: '', type: 'استلام', date: '', time: '', flight: '', car: '', driver: '', location: '', status: 'upcoming', notes: '' })
+const blank = () => ({ client: '', phone: '', type: 'استلام', date: '', time: '', flight: '', passengers: '', car: '', driver: '', location: '', status: 'upcoming', notes: '' })
 const editingId = ref(null)
 const form = reactive(blank())
 const open = ref(false)
@@ -52,7 +52,7 @@ function edit(a) {
   editingId.value = a.id
   Object.assign(form, blank(), {
     client: a.client || '', phone: a.phone || '', type: a.type || 'استلام', date: a.date || '', time: a.time || '',
-    flight: a.flight || '', car: a.car || '', driver: a.driver || '', location: a.location || '',
+    flight: a.flight || '', passengers: a.passengers ?? '', car: a.car || '', driver: a.driver || '', location: a.location || '',
     status: a.status || 'upcoming', notes: a.notes || '',
   })
   open.value = true
@@ -61,9 +61,11 @@ async function save() {
   const client = form.client.trim()
   if (!client) return alert('من فضلك أدخل اسم العميل')
   if (!form.date) return alert('من فضلك أدخل تاريخ الموعد')
+  const pax = form.passengers === '' || form.passengers == null ? null : Number(form.passengers)
+  if (pax != null && (!Number.isInteger(pax) || pax < 0)) return alert('عدد الركاب يجب أن يكون رقماً صحيحاً')
   await store.upsert({
     client, phone: form.phone.trim(), type: form.type, date: form.date, time: form.time,
-    flight: form.flight.trim(), car: form.car, driver: form.driver, location: form.location.trim(),
+    flight: form.flight.trim(), passengers: pax, car: form.car, driver: form.driver, location: form.location.trim(),
     status: form.status, notes: form.notes.trim(),
   }, editingId.value)
   open.value = false
@@ -114,7 +116,7 @@ async function del(a) {
         <thead>
           <tr>
             <th>التاريخ والوقت</th><th>النوع</th><th>العميل</th><th>الهاتف</th>
-            <th>رقم الرحلة</th><th>السيارة</th><th>السائق</th><th>مكان الاستلام/التسليم</th>
+            <th>رقم الرحلة</th><th>عدد الركاب</th><th>السيارة</th><th>السائق</th><th>مكان الاستلام/التسليم</th>
             <th>الحالة</th><th>ملاحظات</th><th></th>
           </tr>
         </thead>
@@ -125,6 +127,7 @@ async function del(a) {
             <td>{{ a.client }}</td>
             <td class="num">{{ a.phone }}</td>
             <td class="num">{{ a.flight || '—' }}</td>
+            <td class="num">{{ a.passengers ?? '—' }}</td>
             <td>{{ a.car || '—' }}</td>
             <td>{{ a.driver || '—' }}</td>
             <td class="wrap">{{ a.location }}</td>
@@ -157,6 +160,7 @@ async function del(a) {
         <div class="field"><label>التاريخ</label><input v-model="form.date" type="date"></div>
         <div class="field"><label>الوقت</label><input v-model="form.time" type="time"></div>
         <div class="field"><label>رقم الرحلة</label><input v-model="form.flight" placeholder="مثال: MS 785"></div>
+        <div class="field"><label>عدد الركاب (اختياري)</label><input v-model="form.passengers" type="number" min="0" step="1"></div>
         <div class="field">
           <label>السيارة المخصصة (اختياري)</label>
           <select v-model="form.car">
